@@ -1,12 +1,47 @@
-from django.conf.global_settings import MEDIA_URL
+from django.conf.global_settings import MEDIA_URL, MEDIA_ROOT
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core.context_processors import csrf
 from django.core.paginator import InvalidPage, EmptyPage, Paginator
 from django.core.urlresolvers import reverse
+from django.forms import ModelForm
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, render_to_response
 
-from forum.models import Forum, Thread, Post
+from forum.models import Forum, Thread, Post, UserProfile
+from PIL import Image as PImage
+from os.path import join as pjoin
 
+class ProfileForm(ModelForm):
+    class Meta:
+        model = UserProfile
+        exclude = ["posts", "user"]
+
+@login_required
+def profile(request, pk):
+    """Edit user profile."""
+    u = User.objects.get(id=pk)
+    profile, a = UserProfile.objects.get_or_create(user=u)#pk)
+    img = None
+
+    if request.method == "POST":
+        pf = ProfileForm(request.POST, request.FILES, instance=profile)
+        if pf.is_valid():
+            pf.save()
+            # resize and save image under same filename
+            imfn = pjoin(MEDIA_ROOT, profile.avatar.name)
+            try:
+                im = PImage.open(imfn)
+                im.thumbnail((160,160), PImage.ANTIALIAS)
+                im.save(imfn, "JPEG")
+            except:
+                pass
+    else:
+        pf = ProfileForm(instance=profile)
+
+    if profile.avatar:
+        img = "/media/" + profile.avatar.name
+    return render_to_response("forum/profile.html", add_csrf(request, pf=pf, img=img))
 
 def main(request):
     """Main listing."""
@@ -42,8 +77,9 @@ def thread(request, pk):
     posts = Post.objects.filter(thread=pk).order_by("created")
     posts = mk_paginator(request, posts, 15)
     title = Thread.objects.get(pk=pk).title
-    return render(request, "forum/thread.html", add_csrf(request, posts=posts, pk=pk,
-        title=title, media_url=MEDIA_URL))
+    t = Thread.objects.get(pk=pk)
+    return render_to_response("forum/thread.html", add_csrf(request, posts=posts, pk=pk, title=t.title,
+                                                           forum_pk=t.forum.pk, media_url=MEDIA_URL))
 
 def post(request, ptype, pk):
     """Display a post form."""

@@ -6,6 +6,9 @@
 <body>
     <!-- Posts  -->
     <div class="ttitle">{{ title }}</div>
+    <div id="back">
+                <a href="{% url 'forum.views.forum' forum_pk %}">&lt;&lt; back to list of topics</a>
+            </div>
     <div id="list">
 
         {% for post in posts.object_list %}

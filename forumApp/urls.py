@@ -1,6 +1,11 @@
+
 from django.conf.urls import patterns, include, url
 
 from django.contrib import admin
+from django.conf import settings
+
+
+
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -15,7 +20,8 @@ urlpatterns = patterns('',
     url(r"^post/(new_thread|reply)/(\d+)/$", "forum.views.post"),
     url(r"^new_thread/(\d+)/$", "forum.views.new_thread"),
     url(r"^reply/(\d+)/$", "forum.views.reply"),
-    #url(r"^profile/(\d+)/$", "forum.views.profile"),
+    url(r"^profile/(\d+)/$", "forum.views.profile"),
+    url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT, 'show_indexes': False}),
 
 
 )

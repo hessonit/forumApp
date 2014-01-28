@@ -1,7 +1,7 @@
 
 from django.db import models
 from django.contrib.auth.models import User
-
+from PIL import Image
 
 
 class Forum(models.Model):
@@ -48,9 +48,20 @@ class Post(models.Model):
     thread = models.ForeignKey(Thread)
     body = models.TextField(max_length=10000)
 
+    @property
     def __unicode__(self):
         return u"%s - %s - %s" % (self.creator, self.thread, self.title)
 
     def short(self):
         return u"%s - %s\n%s" % (self.creator, self.title, self.created.strftime("%b %d, %I:%M %p"))
     short.allow_tags = True
+
+class UserProfile(models.Model):
+    avatar = models.ImageField("Profile Pic", upload_to="media/images/", blank=True, null=True)
+    posts = models.IntegerField(default=0)
+    user = models.ForeignKey(User, unique=True)
+
+    @property
+    def __unicode__(self):
+        return self.user
+
