@@ -29,12 +29,14 @@ def profile(request, pk):
         if pf.is_valid():
             pf.save()
             # resize and save image under same filename
-            imfn = pjoin(MEDIA_ROOT, profile.avatar.name)
+            imfn = pjoin("media"+MEDIA_ROOT, profile.avatar.name)
             try:
+                print "resize"
                 im = PImage.open(imfn)
-                im.thumbnail((160,160), PImage.ANTIALIAS)
+                im.thumbnail((80,80), PImage.ANTIALIAS)
                 im.save(imfn, "JPEG")
             except:
+                print "dupa"
                 pass
     else:
         pf = ProfileForm(instance=profile)
