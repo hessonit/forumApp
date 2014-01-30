@@ -2,6 +2,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from PIL import Image
+from django.db.models.signals import post_save
 
 
 class Forum(models.Model):
@@ -56,6 +57,22 @@ class Post(models.Model):
         return u"%s - %s\n%s" % (self.creator, self.title, self.created.strftime("%b %d, %I:%M %p"))
     short.allow_tags = True
 
+    def profile_data(self):
+        p = self.creator.userprofile_set.all()[0]
+        #print "profile data tralalala"
+        print p.posts, p.avatar
+        return p.posts, "/media/"+p.avatar
+
+    def posts(self):
+        p = self.creator.userprofile_set.all()[0]
+        return p.posts
+
+    def avatar(self):
+        p = self.creator.userprofile_set.all()[0]
+        #print p.avatar
+        return p.avatar
+
+
 class UserProfile(models.Model):
     avatar = models.ImageField("Profile Pic", upload_to="media/images/", blank=True, null=True)
     posts = models.IntegerField(default=0)
@@ -65,3 +82,16 @@ class UserProfile(models.Model):
     def __unicode__(self):
         return self.user
 
+def create_user_profile(sender, **kwargs):
+    """When creating a new user, make a profile for him."""
+    u = kwargs["instance"]
+    print u
+    if not UserProfile.objects.filter(user=u):
+        print "if not UserProfile"
+        print UserProfile(user=u).avatar.name
+        UserProfile(user=u).save()
+    else:
+        print UserProfile(user=u).avatar
+
+
+post_save.connect(create_user_profile, sender=User)

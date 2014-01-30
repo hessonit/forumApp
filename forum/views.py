@@ -41,6 +41,12 @@ def profile(request, pk):
 
     if profile.avatar:
         img = "/media/" + profile.avatar.name
+        print profile.avatar.name
+    else:
+        img = "/media/media/images/images.jpg"
+        profile.avatar.name = "media/images/images.jpg"
+        profile.save()
+
     return render_to_response("forum/profile.html", add_csrf(request, pf=pf, img=img))
 
 def main(request):
@@ -80,7 +86,7 @@ def thread(request, pk):
     t = Thread.objects.get(pk=pk)
     return render_to_response("forum/thread.html", add_csrf(request, posts=posts, pk=pk, title=t.title,
                                                            forum_pk=t.forum.pk, media_url=MEDIA_URL))
-
+@login_required
 def post(request, ptype, pk):
     """Display a post form."""
     action = reverse("forum.views.%s" % ptype, args=[pk])
@@ -93,33 +99,49 @@ def post(request, ptype, pk):
     elif ptype == "reply":
         title = "Reply"
         subject = "Re: " + Thread.objects.get(pk=pk).title
-    #print("loooooooooooooooooooool")
+    print "loo00ooooooool"
     return render(request, "forum/post.html", add_csrf(request, subject=subject, action=action,
                                                           title=title))
 
-def asda(request):
+def increment_post_counter(request):
+    profile = request.user.userprofile_set.all()[0]
+    profile.posts += 1
+    profile.save()
+
+
+def aaa():
     return 2
 
+@login_required
 def new_thread(request, pk):
     """Start a new thread."""
+
     p = request.POST
-    print("looooooooooooooooooool")
     if p["subject"] and p["body"]:
+        print UserProfile(user=request.user).avatar
+        print str(UserProfile(user=request.user).avatar)
+
         forum = Forum.objects.get(pk=pk)
         thread = Thread.objects.create(forum=forum, title=p["subject"], creator=request.user)
         Post.objects.create(thread=thread, title=p["subject"], body=p["body"], creator=request.user)
-        #increment_post_counter(request)
-
+        increment_post_counter(request)
     return HttpResponseRedirect(reverse("forum.views.forum", args=[pk]))
 
-
+@login_required
 def reply(request, pk):
     """Reply to a thread."""
     p = request.POST
     if p["body"]:
+        print "request user: "
+        print request.user
+        u = User.objects.get(username=request.user)
+        print u.email
+        profile = UserProfile.objects.get(user=u)#pk)
+        print profile.avatar.name
+        print profile.posts
         thread = Thread.objects.get(pk=pk)
         post = Post.objects.create(thread=thread, title=p["subject"], body=p["body"], creator=request.user)
-        #increment_post_counter(request)
+        increment_post_counter(request)
     return HttpResponseRedirect(reverse("forum.views.thread", args=[pk]) + "?page=last")
 
 
