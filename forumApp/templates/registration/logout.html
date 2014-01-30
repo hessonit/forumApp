@@ -1,0 +1,17 @@
+
+{% block title %}Logout Page{% endblock %}
+{% block extrahead %}
+    <script type="text/javascript">
+        setTimeout(function() {
+            window.location.href = "/";
+        }, 2000);
+    </script>
+{% endblock %}
+{% block body %}
+  <div>
+    <p style='color:#092E20;font-size:25px;font-weight:bold;padding-top:20px;padding-left:15px;'>
+         You have been successfully logged out......
+    </p>
+    <p>Redirecting to main page.....</p>
+  </div>      
+{% endblock %}
