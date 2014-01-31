@@ -77,13 +77,13 @@ def mk_paginator(request, items, num_items):
 def forum(request, pk):
     """Listing of threads in a forum."""
     threads = Thread.objects.filter(forum=pk).order_by("-created")
-    threads = mk_paginator(request, threads, 20)
+    threads = mk_paginator(request, threads, 10)
     return render(request, "forum/forum.html", add_csrf(request, threads=threads, pk=pk))
 
 def thread(request, pk):
     """Listing of posts in a thread."""
     posts = Post.objects.filter(thread=pk).order_by("created")
-    posts = mk_paginator(request, posts, 15)
+    posts = mk_paginator(request, posts, 10)
     title = Thread.objects.get(pk=pk).title
     t = Thread.objects.get(pk=pk)
     return render_to_response("forum/thread.html", add_csrf(request, posts=posts, pk=pk, title=t.title,

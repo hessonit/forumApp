@@ -61,19 +61,19 @@
         </div>
 
         <!-- Next/Prev page links  -->
-        {% if threads.object_list and threads.paginator.num_pages > 1 %}
+        {% if posts.object_list and posts.paginator.num_pages > 1 %}
         <div class="pagination">
             <span class="step-links">
-                {% if threads.has_previous %}
-                    <a href= "?page={{ threads.previous_page_number }}">previous &lt;&lt; </a>
+                {% if posts.has_previous %}
+                    <a href= "?page={{ posts.previous_page_number }}">previous &lt;&lt; </a>
                 {% endif %}
 
                 <span class="current">
-                    &nbsp;Page {{ threads.number }} of {{ threads.paginator.num_pages }}
+                    &nbsp;Page {{ posts.number }} of {{ posts.paginator.num_pages }}
                 </span>
 
-                {% if threads.has_next %}
-                    <a href="?page={{ threads.next_page_number }}"> &gt;&gt; next</a>
+                {% if posts.has_next %}
+                    <a href="?page={{ posts.next_page_number }}"> &gt;&gt; next</a>
                 {% endif %}
             </span>
         </div>
