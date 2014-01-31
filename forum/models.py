@@ -85,13 +85,13 @@ class UserProfile(models.Model):
 def create_user_profile(sender, **kwargs):
     """When creating a new user, make a profile for him."""
     u = kwargs["instance"]
-    print u
+    #print u
     if not UserProfile.objects.filter(user=u):
-        print "if not UserProfile"
-        print UserProfile(user=u).avatar.name
+        #print "if not UserProfile"
+        #print UserProfile(user=u).avatar.name
         UserProfile(user=u).save()
-    else:
-        print UserProfile(user=u).avatar
+    #else:
+    #    print UserProfile(user=u).avatar
 
 
 post_save.connect(create_user_profile, sender=User)
