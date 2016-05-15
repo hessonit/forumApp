@@ -1,6 +1,6 @@
-forum napisane w django
+simple forum written django
 
-wersja django: 1.6.1
-wersja pythona: 2.7.5
+django: 1.6.1
+python: 2.7.5
 
 
